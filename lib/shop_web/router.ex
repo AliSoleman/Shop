@@ -23,6 +23,7 @@ defmodule ShopWeb.Router do
     # Products routes
     get "/products", ProductController, :index
     get "/products/:id", ProductController, :show
+    resources "/users", UserController
   end
   # Other scopes may use custom stacks.
   # scope "/api", ShopWeb do
