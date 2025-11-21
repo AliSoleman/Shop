@@ -2,6 +2,7 @@ defmodule Shop.Products.Product do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:name , :description , :image , :category , :slug , :id]}
   schema "products" do
     field :name, :string
     field :slug, :string
