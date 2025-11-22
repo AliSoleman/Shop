@@ -1,6 +1,5 @@
 defmodule ShopWeb.PageController do
   use ShopWeb, :controller
-  alias Shop.{Repo,Product}
   alias Shop.Products
   def home(conn, _params) do
     products = Products.list_products()

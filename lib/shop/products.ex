@@ -2,7 +2,7 @@
 defmodule Shop.Products do
      alias Shop.Repo
      alias Shop.Products.Product
-     import Ecto.Query
+   #   import Ecto.Query
 
      def list_products(), do: Repo.all(Product)
      def get_product(id), do: Repo.get(Product, id)

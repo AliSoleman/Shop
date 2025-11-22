@@ -7,6 +7,19 @@
 # General application configuration
 import Config
 
+config :shop, :scopes,
+  customer: [
+    default: true,
+    module: Shop.Customers.Scope,
+    assign_key: :current_scope,
+    access_path: [:customer, :id],
+    schema_key: :customer_id,
+    schema_type: :id,
+    schema_table: :customers,
+    test_data_fixture: Shop.CustomersFixtures,
+    test_setup_helper: :register_and_log_in_customer
+  ]
+
 config :shop,
   ecto_repos: [Shop.Repo],
   generators: [timestamp_type: :utc_datetime]

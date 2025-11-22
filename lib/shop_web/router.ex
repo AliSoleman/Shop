@@ -1,6 +1,8 @@
 defmodule ShopWeb.Router do
   use ShopWeb, :router
 
+  import ShopWeb.CustomerAuth
+
   pipeline :browser do
     plug :accepts, ["html" , "json"]
     plug :fetch_session
@@ -8,6 +10,7 @@ defmodule ShopWeb.Router do
     plug :put_root_layout, html: {ShopWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_scope_for_customer
   end
 
   pipeline :api do
@@ -46,5 +49,33 @@ defmodule ShopWeb.Router do
       live_dashboard "/dashboard", metrics: ShopWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  ## Authentication routes
+
+  scope "/", ShopWeb do
+    pipe_through [:browser, :require_authenticated_customer]
+
+    live_session :require_authenticated_customer,
+      on_mount: [{ShopWeb.CustomerAuth, :require_authenticated}] do
+      live "/customers/settings", CustomerLive.Settings, :edit
+      live "/customers/settings/confirm-email/:token", CustomerLive.Settings, :confirm_email
+    end
+
+    post "/customers/update-password", CustomerSessionController, :update_password
+  end
+
+  scope "/", ShopWeb do
+    pipe_through [:browser]
+
+    live_session :current_customer,
+      on_mount: [{ShopWeb.CustomerAuth, :mount_current_scope}] do
+      live "/customers/register", CustomerLive.Registration, :new
+      live "/customers/log-in", CustomerLive.Login, :new
+      live "/customers/log-in/:token", CustomerLive.Confirmation, :new
+    end
+
+    post "/customers/log-in", CustomerSessionController, :create
+    delete "/customers/log-out", CustomerSessionController, :delete
   end
 end
